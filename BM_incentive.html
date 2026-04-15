@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ブランドマネージャー インセンティブ制度</title>
+<style>
+:root {
+  --orange: #D4802A;
+  --orange-light: #F5DEB8;
+  --dark: #1A1A1A;
+  --gray: #595959;
+  --gray-light: #F7F7F5;
+  --gray-mid: #E5E5E2;
+  --blue: #1F3864;
+  --teal: #2E75B6;
+  --teal-light: #DEEAF1;
+  --green: #375623;
+  --green-light: #E2EFDA;
+  --purple: #7030A0;
+  --purple-light: #EDE7F6;
+  --white: #FFFFFF;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+  background: #EFEFEC;
+  color: var(--dark);
+  padding: 12px;
+}
+
+/* ── TOC ── */
+.toc {
+  background: var(--white);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+  border-left: 4px solid var(--orange);
+}
+.toc h2 { font-size: 13px; color: var(--orange); font-weight: 700; margin-bottom: 12px; letter-spacing: .05em; }
+.toc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.toc-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 10px; border-radius: 8px;
+  background: var(--gray-light); cursor: pointer;
+  text-decoration: none; color: var(--dark);
+  font-size: 12px; font-weight: 600;
+  transition: background .15s;
+}
+.toc-item:active { background: var(--orange-light); }
+.toc-num {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--orange); color: white;
+  font-size: 10px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+/* ── SLIDE ── */
+.slide {
+  background: var(--white);
+  border-radius: 12px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,.06);
+}
+
+.slide-accent { height: 4px; background: var(--orange); }
+
+.slide-inner { padding: 20px 16px 22px; }
+
+.slide-label {
+  font-size: 10px; font-weight: 700;
+  color: var(--orange); letter-spacing: .08em;
+  text-transform: uppercase; margin-bottom: 6px;
+}
+
+.slide-title {
+  font-size: 22px; font-weight: 800;
+  color: var(--dark); line-height: 1.25;
+  margin-bottom: 14px;
+}
+
+.slide-sub {
+  font-size: 11px; color: var(--gray);
+  margin-bottom: 14px; font-style: italic;
+}
+
+/* ── COVER ── */
+.cover .slide-title { font-size: 26px; color: var(--dark); }
+.cover .cover-orange { color: var(--orange); }
+.cover-meta { margin-top: 16px; }
+.cover-meta span {
+  display: inline-block; font-size: 12px; color: var(--gray);
+  margin-right: 16px;
+}
+
+/* ── RULE TABLE ── */
+.rule-row {
+  display: flex; gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--gray-mid);
+  align-items: flex-start;
+}
+.rule-row:last-child { border-bottom: none; }
+.rule-label {
+  flex-shrink: 0; width: 88px;
+  background: var(--orange); color: white;
+  font-size: 10px; font-weight: 700;
+  padding: 5px 8px; border-radius: 5px;
+  text-align: center; line-height: 1.3;
+}
+.rule-val { font-size: 12px; color: var(--dark); line-height: 1.6; }
+
+/* ── BM TABLE ── */
+.bm-table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 8px; }
+.bm-table th {
+  background: var(--blue); color: white;
+  padding: 7px 6px; text-align: center;
+  font-weight: 700; font-size: 10px; line-height: 1.3;
+}
+.bm-table th.th-h1 { background: var(--teal); }
+.bm-table th.th-h2 { background: var(--green); }
+.bm-table td {
+  padding: 8px 6px; border-bottom: 1px solid var(--gray-mid);
+  font-size: 11px; vertical-align: middle; text-align: right;
+}
+.bm-table td.td-bm {
+  font-weight: 800; font-size: 13px; color: var(--blue);
+  text-align: center; background: #D6E4F0;
+}
+.bm-table td.td-brand {
+  font-size: 10px; color: var(--gray);
+  text-align: left; background: #EBF3FB;
+}
+.bm-table tr:nth-child(even) td { background: var(--gray-light); }
+.bm-table tr:nth-child(even) td.td-bm { background: #C5D9EE; }
+.bm-table tr:nth-child(even) td.td-brand { background: #E0EEF8; }
+.bm-table tr.total-row td {
+  background: var(--blue) !important; color: white;
+  font-weight: 800; font-size: 11px;
+}
+.note { font-size: 10px; color: #999; margin-top: 8px; font-style: italic; }
+
+/* ── INCENTIVE TABLE ── */
+.inc-table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 8px; }
+.inc-table th {
+  padding: 7px 4px; font-size: 9px; font-weight: 700;
+  text-align: center; color: white; line-height: 1.3;
+}
+.inc-table th.h-bm { background: var(--blue); }
+.inc-table th.h-brand { background: var(--blue); text-align: left; }
+.inc-table th.h-budget { background: var(--teal); }
+.inc-table th.h-rate { background: var(--teal); }
+.inc-table th.h-budget2 { background: var(--green); }
+.inc-table th.h-rate2 { background: var(--green); }
+.inc-table th.h-group { font-size: 10px; padding: 6px 4px; }
+.inc-table th.h-group-h1 { background: var(--teal); }
+.inc-table th.h-group-h2 { background: var(--green); }
+
+.inc-table td {
+  padding: 7px 4px; border-bottom: 1px solid var(--gray-mid);
+  text-align: right; vertical-align: middle;
+}
+.inc-table td.td-bm {
+  font-weight: 800; font-size: 13px; color: var(--blue);
+  text-align: center; background: #D6E4F0; padding: 7px 2px;
+}
+.inc-table td.td-brand { font-size: 10px; color: var(--gray); text-align: left; background: #EBF3FB; }
+.inc-table td.td-budget { font-size: 10px; color: #888; background: #F8F8F8; }
+.inc-table td.td-budget2 { font-size: 10px; color: #888; background: #F8F8F8; }
+.inc-table td.td-h1 { background: var(--teal-light); font-weight: 700; color: var(--teal); font-size: 12px; }
+.inc-table td.td-h2 { background: var(--green-light); font-weight: 700; color: var(--green); font-size: 12px; }
+.inc-table td.td-dash { color: #bbb; text-align: center; background: #F5F5F5; }
+.inc-table tr.total-row td { background: var(--blue) !important; color: white !important; font-weight: 800; }
+
+/* ── FORMULA CARD ── */
+.formula-card {
+  background: var(--gray-light);
+  border-radius: 10px; padding: 14px 16px;
+  margin-bottom: 14px;
+  border-left: 3px solid var(--orange);
+}
+.formula-main { font-size: 14px; font-weight: 800; color: var(--dark); margin-bottom: 8px; }
+.formula-main span { color: var(--orange); }
+.formula-sub { font-size: 12px; color: var(--gray); line-height: 1.7; }
+
+/* ── SIM TABLE ── */
+.sim-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 10px; }
+.sim-table th {
+  background: var(--teal); color: white;
+  padding: 8px 10px; text-align: center; font-size: 11px;
+}
+.sim-table.purple th { background: var(--purple); }
+.sim-table td {
+  padding: 10px; border-bottom: 1px solid var(--gray-mid);
+  text-align: right;
+}
+.sim-table td:first-child { text-align: center; font-weight: 700; color: var(--gray); }
+.sim-table td.val { font-weight: 800; color: var(--teal); font-size: 14px; }
+.sim-table.purple td.val { color: var(--purple); }
+
+/* ── FEATURES ── */
+.feature-list { margin-top: 12px; }
+.feature-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 8px 0; border-bottom: 1px solid var(--gray-mid);
+}
+.feature-item:last-child { border-bottom: none; }
+.feature-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--orange); flex-shrink: 0; margin-top: 5px;
+}
+.feature-text { font-size: 13px; color: var(--dark); line-height: 1.6; }
+
+/* ── COMPARE TABLE ── */
+.cmp-table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 10px; }
+.cmp-table th {
+  padding: 8px 6px; font-size: 11px; font-weight: 700;
+  text-align: center; color: white;
+}
+.cmp-table th:nth-child(1) { background: var(--blue); }
+.cmp-table th:nth-child(2) { background: var(--teal); }
+.cmp-table th:nth-child(3) { background: var(--purple); }
+.cmp-table td {
+  padding: 9px 8px; border-bottom: 1px solid var(--gray-mid);
+  font-size: 12px; vertical-align: top; line-height: 1.5;
+}
+.cmp-table td:nth-child(1) { font-weight: 700; color: var(--gray); font-size: 11px; }
+.cmp-table td:nth-child(2) { text-align: center; }
+.cmp-table td:nth-child(3) { text-align: center; }
+.cmp-table tr:nth-child(even) td { background: var(--gray-light); }
+
+/* ── GOAL CARD ── */
+.goal-section { margin-bottom: 14px; }
+.goal-title { font-size: 13px; font-weight: 700; color: var(--orange); margin-bottom: 8px; }
+.goal-card {
+  background: var(--gray-light); border-radius: 10px;
+  padding: 14px; margin-bottom: 8px;
+}
+.goal-card-title { font-size: 13px; font-weight: 700; color: var(--dark); margin-bottom: 6px; }
+.goal-card-body { font-size: 12px; color: var(--gray); line-height: 1.7; }
+
+/* ── STEP CARDS ── */
+.step-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 10px; }
+.step-card {
+  border-radius: 10px; padding: 14px;
+  border: 1.5px solid var(--orange); background: var(--gray-light);
+}
+.step-num { font-size: 28px; font-weight: 900; color: var(--orange); line-height: 1; margin-bottom: 6px; }
+.step-title { font-size: 13px; font-weight: 700; color: var(--dark); margin-bottom: 6px; }
+.step-body { font-size: 12px; color: var(--gray); line-height: 1.6; }
+
+/* ── ISSUE CARDS ── */
+.issue-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 10px; }
+.issue-card {
+  background: var(--gray-light); border-radius: 10px;
+  padding: 14px; border-left: 4px solid var(--orange);
+}
+.issue-title { font-size: 14px; font-weight: 700; color: var(--dark); margin-bottom: 8px; }
+.issue-body { font-size: 12px; color: var(--gray); line-height: 1.7; }
+
+/* scroll target */
+.slide-anchor { scroll-margin-top: 12px; }
+</style>
+</head>
+<body>
+
+<!-- TOC -->
+<div class="toc">
+  <h2>目次</h2>
+  <div class="toc-grid">
+    <a href="#s1" class="toc-item"><span class="toc-num">1</span>表紙</a>
+    <a href="#s2" class="toc-item"><span class="toc-num">2</span>目標</a>
+    <a href="#s3" class="toc-item"><span class="toc-num">3</span>共通ルール</a>
+    <a href="#s4" class="toc-item"><span class="toc-num">4</span>BM・予算</a>
+    <a href="#s5" class="toc-item"><span class="toc-num">5</span>案①の仕組み</a>
+    <a href="#s6" class="toc-item"><span class="toc-num">6</span>案②の仕組み</a>
+    <a href="#s7" class="toc-item"><span class="toc-num">7</span>案①一覧</a>
+    <a href="#s8" class="toc-item"><span class="toc-num">8</span>案②一覧</a>
+    <a href="#s9" class="toc-item"><span class="toc-num">9</span>2案比較</a>
+    <a href="#s10" class="toc-item"><span class="toc-num">10</span>今後の課題</a>
+  </div>
+</div>
+
+<!-- S1: 表紙 -->
+<div class="slide cover slide-anchor" id="s1">
+  <div class="slide-accent"></div>
+  <div class="slide-inner">
+    <div class="slide-title">ブランドマネージャー<br><span class="cover-orange">インセンティブ制度</span></div>
+    <div class="cover-meta">
+      <span>2026年度</span>
+      <span>経営企画室</span>
+    </div>
+  </div>
+</div>
+
+<!-- S2: 目標 -->
+<div class="slide slide-anchor" id="s2">
+  <div class="slide-accent"></div>
+  <div class="slide-inner">
+    <div class="slide-label">目標</div>
+    <div class="slide-title">インセンティブ制度の設計方針</div>
+    <div class="formula-card">
+      <div class="formula-main">各ブランドの評価として、ある「原資」をブランドに配布し、<br>インセンティブとして支払うことを制度化する</div>
+    </div>
+    <div class="goal-section">
+      <div class="goal-title">★ 原資の決め方</div>
+      <div class="goal-card">
+        <div class="goal-card-title">案① 超過利益</div>
+        <div class="goal-card-body">実績粗利 − 予算粗利 をベースに還元</div>
+      </div>
+      <div class="goal-card">
+        <div class="goal-card-title">案② 実績粗利</div>
+        <div class="goal-card-body">実績粗利そのものに支給率を掛けて還元</div>
+      </div>
+    </div>
+    <div class="goal-section">
+      <div class="goal-title">★ 対象者</div>
+      <div class="goal-card">
+        <div class="goal-card-body">ブランドマネージャー（サブ・ブランドマネージャー？）（チャネル・ブランド担当者？）</div>
+      </div>
+    </div>
+    <div class="goal-section">
+      <div class="goal-title">★ 配分の決め方</div>
+      <div class="goal-card">
+        <div class="goal-card-body">ブランドマネージャー裁量</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- S3: 共通ルール -->
+<div class="slide slide-anchor" id="s3">
+  <div class="slide-accent"></div>
+  <div class="slide-inner">
+    <div class="slide-label">制度の共通設計</div>
+    <div class="slide-title">2案に共通する基本ルール</div>
+    <div class="rule-row"><div class="rule-label">評価指標</div><div class="rule-val">ブランド別PL（粗利ベース）<br><small style="color:#aaa">→ 本当は、営業利益ベースが望ましい</small></div></div>
+    <div class="rule-row"><div class="rule-label">発動条件</div><div class="rule-val">実績粗利 ≧ 予算粗利（100%達成以上）</div></div>
+    <div class="rule-row"><div class="rule-label">還元周期</div><div class="rule-val">半期払い　上半期（4〜9月）・下半期（10〜3月）を独立して計算・支給</div></div>
+    <div class="rule-row"><div class="rule-label">青天井</div><div class="rule-val">上限なし。超えれば超えるほど報酬が増える</div></div>
+    <div class="rule-row"><div class="rule-label">最低保証</div><div class="rule-val">なし（シンプルな制度を優先）</div></div>
+    <div class="rule-row"><div class="rule-label">予算低め防止</div><div class="rule-val">前年実績を下回る予算は原則認めない</div></div>
+    <div class="rule-row"><div class="rule-label">評価責任者</div><div class="rule-val">社長</div></div>
+  </div>
+</div>
+
+<!-- S4: BM予算 -->
+<div class="slide slide-anchor" id="s4">
+  <div class="slide-accent"></div>
+  <div class="slide-inner">
+    <div class="slide-label">制度の共通設計</div>
+    <div class="slide-title">BM・ブランド対応と粗利予算（2026年度）</div>
+    <div style="overflow-x:auto">
+    <table class="bm-table">
+      <thead>
+        <tr>
+          <th>BM</th>
+          <th style="text-align:left">担当ブランド</th>
+          <th class="th-h1">上半期予算<br>（千円）</th>
+          <th class="th-h2">下半期予算<br>（千円）</th>
+          <th style="background:var(--blue)">通期合計<br>（千円）</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="td-bm">坪井</td><td class="td-brand">Lypo-C VC / C+D / C+D+K</td><td>2,409,570</td><td>2,397,994</td><td style="font-weight:800;color:var(--blue)">4,807,564</td></tr>
+        <tr><td class="td-bm">仲宗根</td><td class="td-brand">Lypo-C C+Cera</td><td>93,381</td><td>122,433</td><td style="font-weight:800;color:var(--blue)">215,814</td></tr>
+        <tr><td class="td-bm">冨田</td><td class="td-brand">Lypo-C CBD / Biosyyd.</td><td>43,791</td><td>68,911</td><td style="font-weight:800;color:var(--blue)">112,702</td></tr>
+        <tr><td class="td-bm">小林</td><td class="td-brand">SKINBEAUTY</td><td>103,815</td><td>219,570</td><td style="font-weight:800;color:var(--blue)">323,385</td></tr>
+        <tr><td class="td-bm">宮崎</td><td class="td-brand">MINERALion</td><td>61,975</td><td>94,812</td><td style="font-weight:800;color:var(--blue)">156,787</td></tr>
+        <tr><td class="td-bm">森田</td><td class="td-brand">Lypo-C C+B</td><td style="color:#bbb">—</td><td>33,839</td><td style="font-weight:800;color:var(--blue)">33,839</td></tr>
+        <tr><td class="td-bm">柳澤</td><td class="td-brand">Lypospheric（上）/ Gelsome（下）</td><td>78,662</td><td>53,355</td><td style="font-weight:800;color:var(--blue)">132,017</td></tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="note">単位：千円　粗利＝売上総損益金額（2026年度予算ファイルより）</div>
+  </div>
+</div>
+
+<!-- S5: 案① 仕組み -->
+<div class="slide slide-anchor" id="s5">
+  <div class="slide-accent"></div>
+  <div class="slide-inner">
+    <div class="slide-label">案①</div>
+    <div class="slide-title">案① 超過利益 × 還元率方式</div>
+    <div class="formula-card">
+      <div class="formula-main">支給額 ＝ 超過利益 × <span>還元率</span></div>
+      <div class="formula-sub">
+        超過利益 ＝ 実績粗利 − 予算粗利<br>
+        <strong style="color:var(--orange)">還元率：10%（変数・変更可能）</strong>
+      </div>
+    </div>
+    <div class="feature-list">
+      <div class="feature-item"><div class="feature-dot"></div><div class="feature-text">超えた分だけ返ってくる直感的な設計</div></div>
+      <div class="feature-item"><div class="feature-dot"></div><div class="feature-text">還元率を1つ変えるだけで全BMの試算が更新</div></div>
+      <div class="feature-item"><div class="feature-dot"></div><div class="feature-text">ブランド規模に関わらず、同じ還元率で公平</div></div>
+      <div class="feature-item"><div class="feature-dot"></div><div class="feature-text">100%未達の場合は支給なし</div></div>
+    </div>
+    <div style="margin-top:16px">
+      <div style="font-size:12px;font-weight:700;color:var(--teal);margin-bottom:8px">シミュレーション例（還元率10%）</div>
+      <table class="sim-table">
+        <tr><th>達成率</th><th>全社超過粗利</th><th>全社支給総額</th></tr>
+        <tr><td>110%</td><td>約575,000千円</td><td class="val">約57,500千円</td></tr>
+        <tr><td>120%</td><td>約1,150,000千円</td><td class="val">約115,000千円</td></tr>
+        <tr><td>130%</td><td>約1,725,000千円</td><td class="val">約172,500千円</td></tr>
+        <tr><td>150%</td><td>約2,875,000千円</td><td class="val">約287,500千円</td></tr>
+      </table>
+      <div class="note">※全BMが同一達成率の場合の試算</div>
+    </div>
+  </div>
+</div>
+
+<!-- S6: 案② 仕組み -->
+<div class="slide slide-anchor" id="s6">
+  <div class="slide-accent"></div>
+  <div class="slide-inner">
+    <div class="slide-label">案②</div>
+    <div class="slide-title">案② 実績粗利 × 支給率方式</div>
+    <div class="formula-card" style="border-left-color:var(--purple)">
+      <div class="formula-main">支給額 ＝ 実績粗利 × <span style="color:var(--purple)">支給率</span></div>
+      <div class="formula-sub">
+        発動条件：実績粗利 ≧ 予算粗利（100%以上）<br>
+        <strong style="color:var(--purple)">支給率：2%（変数・変更可能）</strong>
+      </div>
+    </div>
+    <div class="feature-list">
+      <div class="feature-item"><div class="feature-dot" style="background:var(--purple)"></div><div class="feature-text">「稼いだ総額」に対して報われる感覚</div></div>
+      <div class="feature-item"><div class="feature-dot" style="background:var(--purple)"></div><div class="feature-text">支給率1つで全試算が更新</div></div>
+      <div class="feature-item"><div class="feature-dot" style="background:var(--purple)"></div><div class="feature-text">予算達成（100%）時点から支給が発生</div></div>
+      <div class="feature-item"><div class="feature-dot" style="background:var(--purple)"></div><div class="feature-text">大規模ブランドほど絶対額が大きくなる</div></div>
+    </div>
+    <div style="margin-top:16px">
+      <div style="font-size:12px;font-weight:700;color:var(--purple);margin-bottom:8px">シミュレーション例（支給率2%）</div>
+      <table class="sim-table purple">
+        <tr><th>達成率</th><th>全社実績粗利</th><th>全社支給総額</th></tr>
+        <tr><td>100%</td><td>約5,771,000千円</td><td class="val">約115,420千円</td></tr>
+        <tr><td>110%</td><td>約6,348,000千円</td><td class="val">約126,960千円</td></tr>
+        <tr><td>120%</td><td>約6,925,000千円</td><td class="val">約138,500千円</td></tr>
+        <tr><td>150%</td><td>約8,656,000千円</td><td class="val">約173,120千円</td></tr>
+      </table>
+      <div class="note">※全BMが同一達成率の場合の試算</div>
+    </div>
+  </div>
+</div>
+
+<!-- S7: 案① BM一覧 -->
+<div class="slide slide-anchor" id="s7">
+  <div class="slide-accent"></div>
+  <div class="slide-inner">
+    <div class="slide-label">案①</div>
+    <div class="slide-title">案① BM別インセンティブ一覧</div>
+    <div class="slide-sub">超過利益（実績粗利－予算粗利）× 10%　　100%未達の場合は支給なし</div>
+
+    <div style="font-size:11px;font-weight:700;color:var(--teal);margin:12px 0 6px;padding:6px 10px;background:var(--teal-light);border-radius:6px">上半期（4〜9月）インセンティブ（千円）</div>
+    <div style="overflow-x:auto">
+    <table class="inc-table">
+      <tr>
+        <th class="h-bm" style="width:40px">BM</th>
+        <th class="h-brand" style="text-align:left">担当ブランド</th>
+        <th class="h-budget">粗利予算</th>
+        <th class="h-rate">110%</th>
+        <th class="h-rate">130%</th>
+        <th class="h-rate">150%</th>
+      </tr>
+      <tr><td class="td-bm">坪井</td><td class="td-brand">VC/C+D/C+D+K</td><td class="td-budget">2,409,570</td><td class="td-h1">24,096</td><td class="td-h1">72,287</td><td class="td-h1">120,479</td></tr>
+      <tr><td class="td-bm">仲宗根</td><td class="td-brand">C+Cera</td><td class="td-budget">93,381</td><td class="td-h1">934</td><td class="td-h1">2,801</td><td class="td-h1">4,669</td></tr>
+      <tr><td class="td-bm">冨田</td><td class="td-brand">CBD/Biosyyd.</td><td class="td-budget">43,791</td><td class="td-h1">438</td><td class="td-h1">1,314</td><td class="td-h1">2,190</td></tr>
+      <tr><td class="td-bm">小林</td><td class="td-brand">SKINBEAUTY</td><td class="td-budget">103,815</td><td class="td-h1">1,038</td><td class="td-h1">3,114</td><td class="td-h1">5,191</td></tr>
+      <tr><td class="td-bm">宮崎</td><td class="td-brand">MINERALion</td><td class="td-budget">61,975</td><td class="td-h1">620</td><td class="td-h1">1,859</td><td class="td-h1">3,099</td></tr>
+      <tr><td class="td-bm">森田</td><td class="td-brand">C+B</td><td class="td-dash">—</td><td class="td-dash">—</td><td class="td-dash">—</td><td class="td-dash">—</td></tr>
+      <tr><td class="td-bm">柳澤</td><td class="td-brand">Lypospheric/Gelsome</td><td class="td-budget">78,662</td><td class="td-h1">787</td><td class="td-h1">2,360</td><td class="td-h1">3,933</td></tr>
+      <tr class="total-row"><td colspan="2" style="text-align:center">全社合計</td><td></td><td>27,913</td><td>83,735</td><td>139,561</td></tr>
+    </table>
+    </div>
+
+    <div style="font-size:11px;font-weight:700;color:var(--green);margin:16px 0 6px;padding:6px 10px;background:var(--green-light);border-radius:6px">下半期（10〜3月）インセンティブ（千円）</div>
+    <div style="overflow-x:auto">
+    <table class="inc-table">
+      <tr>
+        <th class="h-bm" style="width:40px">BM</th>
+        <th class="h-brand" style="text-align:left;background:var(--green)">担当ブランド</th>
+        <th class="h-budget2" style="background:var(--green)">粗利予算</th>
+        <th class="h-rate2" style="background:var(--green)">110%</th>
+        <th class="h-rate2" style="background:var(--green)">130%</th>
+        <th class="h-rate2" style="background:var(--green)">150%</th>
+      </tr>
+      <tr><td class="td-bm">坪井</td><td class="td-brand">VC/C+D/C+D+K</td><td class="td-budget2">2,397,994</td><td class="td-h2">23,980</td><td class="td-h2">71,940</td><td class="td-h2">119,900</td></tr>
+      <tr><td class="td-bm">仲宗根</td><td class="td-brand">C+Cera</td><td class="td-budget2">122,433</td><td class="td-h2">1,224</td><td class="td-h2">3,673</td><td class="td-h2">6,122</td></tr>
+      <tr><td class="td-bm">冨田</td><td class="td-brand">CBD/Biosyyd.</td><td class="td-budget2">68,911</td><td class="td-h2">689</td><td class="td-h2">2,067</td><td class="td-h2">3,446</td></tr>
+      <tr><td class="td-bm">小林</td><td class="td-brand">SKINBEAUTY</td><td class="td-budget2">219,570</td><td class="td-h2">2,196</td><td class="td-h2">6,587</td><td class="td-h2">10,979</td></tr>
+      <tr><td class="td-bm">宮崎</td><td class="td-brand">MINERALion</td><td class="td-budget2">94,812</td><td class="td-h2">948</td><td class="td-h2">2,844</td><td class="td-h2">4,741</td></tr>
+      <tr><td class="td-bm">森田</td><td class="td-brand">C+B</td><td class="td-budget2">33,839</td><td class="td-h2">338</td><td class="td-h2">1,015</td><td class="td-h2">1,692</td></tr>
+      <tr><td class="td-bm">柳澤</td><td class="td-brand">Lypospheric/Gelsome</td><td class="td-budget2">53,355</td><td class="td-h2">534</td><td class="td-h2">1,601</td><td class="td-h2">2,668</td></tr>
+      <tr class="total-row"><td colspan="2" style="text-align:center">全社合計</td><td></td><td>29,909</td><td>89,727</td><td>149,548</td></tr>
+    </table>
+    </div>
+    <div class="note">単位：千円　粗利予算は2026年度予算ベース</div>
+  </div>
+</div>
+
+<!-- S8: 案② BM一覧 -->
+<div class="slide slide-anchor" id="s8">
+  <div class="slide-accent"></div>
+  <div class="slide-inner">
+    <div class="slide-label">案②</div>
+    <div class="slide-title">案② BM別インセンティブ一覧</div>
+    <div class="slide-sub">実績粗利 × 支給率2%　　発動条件：実績粗利 ≧ 予算粗利（100%以上）</div>
+
+    <div style="font-size:11px;font-weight:700;color:var(--teal);margin:12px 0 6px;padding:6px 10px;background:var(--teal-light);border-radius:6px">上半期（4〜9月）インセンティブ（千円）</div>
+    <div style="overflow-x:auto">
+    <table class="inc-table">
+      <tr>
+        <th class="h-bm" style="width:40px">BM</th>
+        <th class="h-brand" style="text-align:left">担当ブランド</th>
+        <th class="h-budget">粗利予算</th>
+        <th class="h-rate">110%</th>
+        <th class="h-rate">130%</th>
+        <th class="h-rate">150%</th>
+      </tr>
+      <tr><td class="td-bm">坪井</td><td class="td-brand">VC/C+D/C+D+K</td><td class="td-budget">2,409,570</td><td class="td-h1">53,011</td><td class="td-h1">62,649</td><td class="td-h1">72,287</td></tr>
+      <tr><td class="td-bm">仲宗根</td><td class="td-brand">C+Cera</td><td class="td-budget">93,381</td><td class="td-h1">2,054</td><td class="td-h1">2,428</td><td class="td-h1">2,801</td></tr>
+      <tr><td class="td-bm">冨田</td><td class="td-brand">CBD/Biosyyd.</td><td class="td-budget">43,791</td><td class="td-h1">963</td><td class="td-h1">1,139</td><td class="td-h1">1,314</td></tr>
+      <tr><td class="td-bm">小林</td><td class="td-brand">SKINBEAUTY</td><td class="td-budget">103,815</td><td class="td-h1">2,284</td><td class="td-h1">2,699</td><td class="td-h1">3,114</td></tr>
+      <tr><td class="td-bm">宮崎</td><td class="td-brand">MINERALion</td><td class="td-budget">61,975</td><td class="td-h1">1,363</td><td class="td-h1">1,611</td><td class="td-h1">1,859</td></tr>
+      <tr><td class="td-bm">森田</td><td class="td-brand">C+B</td><td class="td-dash">—</td><td class="td-dash">—</td><td class="td-dash">—</td><td class="td-dash">—</td></tr>
+      <tr><td class="td-bm">柳澤</td><td class="td-brand">Lypospheric/Gelsome</td><td class="td-budget">78,662</td><td class="td-h1">1,731</td><td class="td-h1">2,045</td><td class="td-h1">2,360</td></tr>
+      <tr class="total-row"><td colspan="2" style="text-align:center">全社合計</td><td></td><td>61,406</td><td>72,571</td><td>83,735</td></tr>
+    </table>
+    </div>
+
+    <div style="font-size:11px;font-weight:700;color:var(--green);margin:16px 0 6px;padding:6px 10px;background:var(--green-light);border-radius:6px">下半期（10〜3月）インセンティブ（千円）</div>
+    <div style="overflow-x:auto">
+    <table class="inc-table">
+      <tr>
+        <th class="h-bm" style="width:40px">BM</th>
+        <th class="h-brand" style="text-align:left;background:var(--green)">担当ブランド</th>
+        <th class="h-budget2" style="background:var(--green)">粗利予算</th>
+        <th class="h-rate2" style="background:var(--green)">110%</th>
+        <th class="h-rate2" style="background:var(--green)">130%</th>
+        <th class="h-rate2" style="background:var(--green)">150%</th>
+      </tr>
+      <tr><td class="td-bm">坪井</td><td class="td-brand">VC/C+D/C+D+K</td><td class="td-budget2">2,397,994</td><td class="td-h2">52,756</td><td class="td-h2">62,348</td><td class="td-h2">71,940</td></tr>
+      <tr><td class="td-bm">仲宗根</td><td class="td-brand">C+Cera</td><td class="td-budget2">122,433</td><td class="td-h2">2,694</td><td class="td-h2">3,183</td><td class="td-h2">3,673</td></tr>
+      <tr><td class="td-bm">冨田</td><td class="td-brand">CBD/Biosyyd.</td><td class="td-budget2">68,911</td><td class="td-h2">1,516</td><td class="td-h2">1,792</td><td class="td-h2">2,067</td></tr>
+      <tr><td class="td-bm">小林</td><td class="td-brand">SKINBEAUTY</td><td class="td-budget2">219,570</td><td class="td-h2">4,831</td><td class="td-h2">5,709</td><td class="td-h2">6,587</td></tr>
+      <tr><td class="td-bm">宮崎</td><td class="td-brand">MINERALion</td><td class="td-budget2">94,812</td><td class="td-h2">2,086</td><td class="td-h2">2,465</td><td class="td-h2">2,844</td></tr>
+      <tr><td class="td-bm">森田</td><td class="td-brand">C+B</td><td class="td-budget2">33,839</td><td class="td-h2">744</td><td class="td-h2">880</td><td class="td-h2">1,015</td></tr>
+      <tr><td class="td-bm">柳澤</td><td class="td-brand">Lypospheric/Gelsome</td><td class="td-budget2">53,355</td><td class="td-h2">1,174</td><td class="td-h2">1,387</td><td class="td-h2">1,601</td></tr>
+      <tr class="total-row"><td colspan="2" style="text-align:center">全社合計</td><td></td><td>65,801</td><td>77,764</td><td>89,727</td></tr>
+    </table>
+    </div>
+    <div class="note">単位：千円　粗利予算は2026年度予算ベース</div>
+  </div>
+</div>
+
+<!-- S9: 比較 -->
+<div class="slide slide-anchor" id="s9">
+  <div class="slide-accent"></div>
+  <div class="slide-inner">
+    <div class="slide-label">比較</div>
+    <div class="slide-title">2案の比較</div>
+    <table class="cmp-table">
+      <tr><th>項目</th><th>案① 超過利益×還元率</th><th>案② 実績粗利×支給率</th></tr>
+      <tr><td>計算の基準</td><td>超過利益（実績－予算）</td><td>実績粗利そのもの</td></tr>
+      <tr><td>支給の感覚</td><td>「超えた分だけ返ってくる」</td><td>「稼いだ総額に対して報われる」</td></tr>
+      <tr><td>100%達成時</td><td>支給なし</td><td>支給あり</td></tr>
+      <tr><td>変数</td><td>還元率（例：10%）</td><td>支給率（例：2%）</td></tr>
+      <tr><td>全社支給額（全BM 120%達成）</td><td>約115,000千円</td><td>約138,500千円</td></tr>
+      <tr><td>シンプルさ</td><td>◎ 計算式が直感的</td><td>◎ 計算式が直感的</td></tr>
+      <tr><td>青天井</td><td>◎ 上限なし</td><td>◎ 上限なし</td></tr>
+    </table>
+  </div>
+</div>
+
+<!-- S10: 今後の課題 -->
+<div class="slide slide-anchor" id="s10">
+  <div class="slide-accent"></div>
+  <div class="slide-inner">
+    <div class="slide-label">今後の課題</div>
+    <div class="slide-title">1. 営業利益を原資にする<br>2. 公平性の担保</div>
+    <div class="issue-grid">
+      <div class="issue-card">
+        <div class="issue-title">部門別損益</div>
+        <div class="issue-body">精度向上をしつつ、各チャネル / 間接費の経費を仮置き？</div>
+      </div>
+      <div class="issue-card">
+        <div class="issue-title">ブランド組織</div>
+        <div class="issue-body">ブランド組織としての損益管理のあり方を検討</div>
+      </div>
+      <div class="issue-card">
+        <div class="issue-title">間接部門のインセン</div>
+        <div class="issue-body">部門別損益　or　ベース給でまかなう</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
